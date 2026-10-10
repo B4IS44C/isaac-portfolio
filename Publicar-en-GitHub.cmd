@@ -14,8 +14,13 @@ if not errorlevel 1 goto existing_repo
 gh repo create B4IS44C/isaac-portfolio --public --source . --remote origin --description "Portafolio interactivo de Isaac Hidalgo: full stack, mobile y sistemas"
 if errorlevel 1 goto failed
 :check_remote
-git remote get-url origin | findstr /x /c:"https://github.com/B4IS44C/isaac-portfolio.git" >nul
+git remote get-url origin > "%TEMP%\isaac-portfolio-remote.txt"
 if errorlevel 1 goto wrong_remote
+set /p portfolio_remote=<"%TEMP%\isaac-portfolio-remote.txt"
+if /i "%portfolio_remote%"=="https://github.com/B4IS44C/isaac-portfolio.git" goto remote_ok
+if /i "%portfolio_remote%"=="https://github.com/B4IS44C/isaac-portfolio" goto remote_ok
+goto wrong_remote
+:remote_ok
 git push -u origin main
 if errorlevel 1 goto failed
 gh api repos/B4IS44C/isaac-portfolio/pages >nul 2>nul
