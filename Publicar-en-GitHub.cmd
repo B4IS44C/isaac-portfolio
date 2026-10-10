@@ -16,12 +16,14 @@ if errorlevel 1 goto failed
 :check_remote
 git remote get-url origin | findstr /x /c:"https://github.com/B4IS44C/isaac-portfolio.git" >nul
 if errorlevel 1 goto wrong_remote
+git push -u origin main
+if errorlevel 1 goto failed
 gh api repos/B4IS44C/isaac-portfolio/pages >nul 2>nul
-if not errorlevel 1 goto push
+if not errorlevel 1 goto deploy
 gh api --method POST repos/B4IS44C/isaac-portfolio/pages -f build_type=workflow
 if errorlevel 1 goto failed
-:push
-git push -u origin main
+:deploy
+gh workflow run pages.yml --ref main --repo B4IS44C/isaac-portfolio
 if errorlevel 1 goto failed
 echo.
 echo Codigo publicado. GitHub Actions esta preparando el sitio.
